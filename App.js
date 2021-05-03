@@ -12,7 +12,7 @@ const App = () => {
   return (
     <div>
       <div className="center">
-        <GenerateAllUsers storeId={"psq1"} manager={"felipe"} />
+        <GenerateAllUsers storeId={"psq2"} manager={"felipe"} />
        
         <MoveUser id={4545} storeId={"psq1"} role={"driver"} />
         <MoveUser id={ 8954} storeId={"psq1"} role={"driver"} />
