@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import GenerateUser from "../generate-user/generate-user.component";
 import "./generate-all-users.css";
+// const ENDPOINT = "https://defiance-prod.herokuapp.com"
+const ENDPOINT = "http://localhost:3002"
+
 const GenerateAllUsers = ({ storeId, manager }) => {
   const [users, setUser] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:3001/api/users").then((res) => {
+    axios.get(ENDPOINT + "/api/users").then((res) => {
       setUser(res.data);
     });
   }, []);
