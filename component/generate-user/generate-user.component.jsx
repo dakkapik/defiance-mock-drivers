@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import io from "socket.io-client";
 import CustomButton from "../custom-button/custom-button.component";
 import { makeStyles } from "@material-ui/core/styles";
+import mockData from '../../../defiance-prototipes/drivers-with-orders/d-orders.json'
+
+// const ENDPOINT = "https://defiance-prod.herokuapp.com/"
+const ENDPOINT = "http://localhost:3002"
 
 export const useStyles = makeStyles({
   root: {
@@ -24,7 +28,7 @@ const GenerateUser = ({ id, storeId, role, name }) => {
   const newuser = (number) => {
     setConnectionStyling(!is_connect_or_disconnect);
     if (Object.keys(sockets).length === 0) {
-      const socket = io("http://localhost:3001");
+      const socket = io(ENDPOINT);
       const conv = sockets;
       conv[number] = socket;
       setSockets(conv);
@@ -34,13 +38,17 @@ const GenerateUser = ({ id, storeId, role, name }) => {
           id: number,
           role: role,
         });
+        console.log("this happend")
+        socket.on("order-display", data =>{
+          console.log("new-order: ",data)
+        });
       });
     } else {
       if (sockets[number]) {
         sockets[number].disconnect();
         delete sockets[number];
       } else {
-        const socket = io("http://localhost:3001");
+        const socket = io(ENDPOINT);
         const conv = sockets;
         conv[number] = socket;
         setSockets(conv);
@@ -51,11 +59,19 @@ const GenerateUser = ({ id, storeId, role, name }) => {
             role: role,
           });
         });
+        
       }
     }
   };
-  const sendMessage = (socket) => {
-    socket.send("Hello world!");
+  const sendPosition = (socket) => {
+    socket.emit("position", {lat: 1, lng: 2})
+  };
+  const sendOrderBundle = (socket) => {
+    socket.emit("order-bundles", mockData);
+  };
+  const sendOrderStatus = (socket) => {
+    console.log("update order")
+    socket.emit("order-status", {status: "complete", location: {lat: 50, lng: 50}, orderNumber: 82});
   };
   const classes = useStyles({
     role: role,
@@ -79,10 +95,40 @@ const GenerateUser = ({ id, storeId, role, name }) => {
           color="inherit"
           className={classes.root}
           style={{ color: "lightgreen" }}
-          onClick={() => sendMessage(sockets[id])}
+          onClick={() => sendPosition(sockets[id])}
         >
           {" "}
-          Message{" "}
+          position{" "}
+        </CustomButton>
+      ) : (
+        ""
+      )}
+
+      {is_connect_or_disconnect ? (
+        <CustomButton
+          variant="outlined"
+          color="inherit"
+          className={classes.root}
+          style={{ color: "lightgreen" }}
+          onClick={() => sendOrderBundle(sockets[id])}
+        >
+          {" "}
+          send bundle{" "}
+        </CustomButton>
+      ) : (
+        ""
+      )}
+
+      {is_connect_or_disconnect ? (
+        <CustomButton
+          variant="outlined"
+          color="inherit"
+          className={classes.root}
+          style={{ color: "lightgreen" }}
+          onClick={() => sendOrderStatus(sockets[id])}
+        >
+          {" "}
+          order status{" "}
         </CustomButton>
       ) : (
         ""
